@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>WakeUp & Complete</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #4a4a4a;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 420px;
+            padding: 35px 28px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 20px 40px rgba(166, 193, 238, 0.35);
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 55px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+        }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 6px;
+            color: #6c5ce7;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #9b59b6;
+            font-size: 14px;
+            margin-bottom: 22px;
+            font-weight: 600;
+        }
+
+        .clock {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 22px;
+            color: #e84393;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(232, 67, 147, 0.2);
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin: 15px 0 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #6c5ce7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .time-picker-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e1bee7;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2d3436;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #ba68c8;
+            box-shadow: 0 0 10px rgba(186, 104, 200, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 18px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .set-btn {
+            background: linear-gradient(135deg, #ba68c8, #7986cb);
+            color: white;
+        }
+
+        .stop-btn {
+            background: linear-gradient(135deg, #4db6ac, #80cbc4);
+            color: #004d40;
+        }
+
+        .status {
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #636e72;
+            font-weight: 500;
+            overflow-wrap: anywhere;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .task-box {
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px dashed #ba68c8;
+            border-radius: 20px;
+            padding: 18px;
+            margin-top: 20px;
+        }
+
+        .task-box p {
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #ad1457;
+            font-weight: 600;
+        }
+
+        .task-text {
+            color: #880e4f;
+            font-size: 18px;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+            margin-bottom: 10px;
+        }
+
+        .warning {
+            font-size: 12px;
+            color: #9e9e9e;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="icon">⏰</div>
+
+    <h1>WakeUp & Complete</h1>
+
+    <p class="subtitle">
+        Wake up. Complete your task. Start your day! ✨
+    </p>
+
+    <div class="clock" id="clock">00:00:00 AM</div>
+
+    <div id="setupSection">
+
+        <label for="alarmTime">Set Alarm Time (12-Hour)</label>
+        <div class="time-picker-group">
+            <input type="time" id="alarmTime" required>
+            <select id="ampmSelect">
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+            </select>
+        </div>
+
+        <label for="taskInput">Text Task</label>
+        <input
+            type="text"
+            id="taskInput"
+            placeholder="Example: I WILL WAKE UP"
+            value="I WILL WAKE UP"
+            required
+        >
+
+        <button class="set-btn" id="setAlarmBtn">
+            Set Alarm 🔔
+        </button>
+
+    </div>
+
+    <div id="taskSection" class="hidden">
+
+        <div class="task-box">
+            <p>⚡ Type this text exactly to stop the alarm:</p>
+
+            <div class="task-text" id="requiredTask"></div>
+
+            <label for="taskAnswer">Complete Your Task</label>
+
+            <input
+                type="text"
+                id="taskAnswer"
+                placeholder="Type the required text"
+                autocomplete="off"
+            >
+
+            <button class="stop-btn" id="completeBtn">
+                Complete Task & Stop Alarm 🌸
+            </button>
+        </div>
+
+    </div>
+
+    <p class="status" id="status">
+        Set your alarm and get ready for a productive morning!
+    </p>
+
+    <p class="warning">
+        Note: Keep this page open and your device awake.
+        Browser alarms may not work if the browser is closed
+        or the device is asleep.
+    </p>
+
+</div>
+
+<script>
+    const clock = document.getElementById("clock");
+    const alarmTimeInput = document.getElementById("alarmTime");
+    const ampmSelect = document.getElementById("ampmSelect");
+    const taskInput = document.getElementById("taskInput");
+
+    const setAlarmBtn = document.getElementById("setAlarmBtn");
+    const completeBtn = document.getElementById("completeBtn");
+
+    const setupSection = document.getElementById("setupSection");
+    const taskSection = document.getElementById("taskSection");
+
+    const requiredTask = document.getElementById("requiredTask");
+    const taskAnswer = document.getElementById("taskAnswer");
+    const status = document.getElementById("status");
+
+    let alarmTimeStr = "";
+    let taskText = "";
+    let alarmTriggered = false;
+    let audioContext = null;
+    let alarmInterval = null;
+    let nextAlarmDate = null;
+
+    // Live clock (12-hour format)
+    function updateClock() {
+        const now = new Date();
+
+        clock.textContent = now.toLocaleTimeString("en-US", {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        });
+
+        if (
+            nextAlarmDate &&
+            !alarmTriggered &&
+            now >= nextAlarmDate
+        ) {
+            startAlarm();
+        }
+    }
+
+    setInterval(updateClock, 500);
+    updateClock();
+
+    // Set alarm
+    setAlarmBtn.addEventListener("click", async () => {
+        const timeVal = alarmTimeInput.value;
+        const ampmVal = ampmSelect.value;
+        taskText = taskInput.value.trim();
+
+        if (!timeVal) {
+            status.textContent = "Please select an alarm time.";
+            return;
+        }
+
+        if (!taskText) {
+            status.textContent = "Please enter your text task.";
+            return;
+        }
+
+        try {
+            const AudioContextClass =
+                window.AudioContext || window.webkitAudioContext;
+
+            if (AudioContextClass) {
+                if (!audioContext) {
+                    audioContext = new AudioContextClass();
+                }
+
+                if (audioContext.state === "suspended") {
+                    await audioContext.resume();
+                }
+            }
+        } catch (error) {
+            console.log("Audio could not be initialized.", error);
+        }
+
+        const now = new Date();
+        let [hours, minutes] = timeVal.split(":").map(Number);
+
+        if (ampmVal === "PM" && hours < 12) {
+            hours += 12;
+        }
+        if (ampmVal === "AM" && hours === 12) {
+            hours = 0;
+        }
+
+        nextAlarmDate = new Date(now);
+        nextAlarmDate.setHours(hours, minutes, 0, 0);
+
+        if (nextAlarmDate <= now) {
+            nextAlarmDate.setDate(nextAlarmDate.getDate() + 1);
+        }
+
+        alarmTriggered = false;
+
+        setupSection.classList.add("hidden");
+        taskSection.classList.add("hidden");
+
+        alarmTimeStr = `${timeVal} ${ampmVal}`;
+        status.textContent =
+            "Alarm set for " + alarmTimeStr +
+            ". Keep this page open. You can return to reset it after the alarm.";
+
+        updateClock();
+    });
+
+    // Start alarm
+    function startAlarm() {
+        if (alarmTriggered) return;
+
+        alarmTriggered = true;
+        nextAlarmDate = null;
+
+        requiredTask.textContent = taskText;
+
+        setupSection.classList.add("hidden");
+        taskSection.classList.remove("hidden");
+
+        status.textContent =
+            "🚨 WAKE UP! Enter the exact text to stop the alarm.";
+
+        taskAnswer.value = "";
+        taskAnswer.focus();
+
+        playAlarmSound();
+
+        alarmInterval = setInterval(() => {
+            if (alarmTriggered) {
+                playAlarmSound();
+            }
+        }, 700); // Crisp rapid pulsing loop
+    }
+
+    // Crisp Ring Alarm Tone (Sharp, rhythmic digital pulses)
+    async function playAlarmSound() {
+        try {
+            if (!audioContext) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                audioContext = new AudioContextClass();
+            }
+
+            if (audioContext.state === "suspended") {
+                await audioContext.resume();
+            }
+
+            const now = audioContext.currentTime;
+
+            // Crisp Pulse 1
+            const osc1 = audioContext.createOscillator();
+            const gain1 = audioContext.createGain();
+            osc1.type = "sine";
+            osc1.frequency.setValueAtTime(1046.50, now); // C6 note (crisp bell tone)
+            gain1.gain.setValueAtTime(0.3, now);
+            gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+            osc1.connect(gain1);
+            gain1.connect(audioContext.destination);
+            osc1.start(now);
+            osc1.stop(now + 0.15);
+
+            // Crisp Pulse 2
+            const osc2 = audioContext.createOscillator();
+            const gain2 = audioContext.createGain();
+            osc2.type = "sine";
+            osc2.frequency.setValueAtTime(1318.51, now + 0.18); // E6 note
+            gain2.gain.setValueAtTime(0.3, now + 0.18);
+            gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.33);
+
+            osc2.connect(gain2);
+            gain2.connect(audioContext.destination);
+            osc2.start(now + 0.18);
+            osc2.stop(now + 0.33);
+
+            // Crisp Pulse 3
+            const osc3 = audioContext.createOscillator();
+            const gain3 = audioContext.createGain();
+            osc3.type = "sine";
+            osc3.frequency.setValueAtTime(1567.98, now + 0.36); // G6 note
+            gain3.gain.setValueAtTime(0.3, now + 0.36);
+            gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.51);
+
+            osc3.connect(gain3);
+            gain3.connect(audioContext.destination);
+            osc3.start(now + 0.36);
+            osc3.stop(now + 0.51);
+
+        } catch (error) {
+            console.log("Audio play error:", error);
+            status.textContent = "🚨 Alarm is active! (Check your media volume)";
+        }
+    }
+
+    completeBtn.addEventListener("click", completeTask);
+
+    taskAnswer.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            completeTask();
+        }
+    });
+
+    function completeTask() {
+        if (!alarmTriggered) return;
+
+        if (taskAnswer.value.trim() !== taskText) {
+            status.textContent =
+                "❌ Incorrect text! Read the task and try again.";
+
+            taskAnswer.value = "";
+            taskAnswer.focus();
+
+            return;
+        }
+
+        alarmTriggered = false;
+
+        if (alarmInterval) {
+            clearInterval(alarmInterval);
+            alarmInterval = null;
+        }
+
+        status.textContent =
+            "✅ Task completed! Alarm stopped. Have a great day!";
+
+        taskSection.classList.add("hidden");
+        setupSection.classList.remove("hidden");
+
+        alarmTimeInput.value = "";
+        taskInput.value = taskText;
+
+        nextAlarmDate = null;
+    }
+</script>
+
+</body>
+</html>
